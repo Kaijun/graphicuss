@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>E-Discuss</title>
+    <!-- TODO: REMOVED -->
+    <script src="http://rawgit.com/theozaurus/drawing-fabric.js/master/vendor/jquery.js" charset="utf-8"></script>
+    <script src="http://rawgit.com/theozaurus/drawing-fabric.js/master/vendor/fabric.js" charset="utf-8"></script>
+    <script src="http://rawgit.com/theozaurus/drawing-fabric.js/master/build/drawing_fabric.js" charset="utf-8"></script>
+
+    <!-- <link rel="stylesheet" href="http://rawgit.com/theozaurus/drawing-fabric.js/master/demo/vendor/bootstrap.css" media="screen" title="no title" charset="utf-8"> -->
+    <!-- <script src="http://rawgit.com/theozaurus/drawing-fabric.js/master/demo/vendor/bootstrap.js" charset="utf-8"></script> -->
+    <link rel="stylesheet" href="http://rawgit.com/theozaurus/drawing-fabric.js/master/demo/vendor/spectrum.css" media="screen" title="no title" charset="utf-8">
+    <script src="http://rawgit.com/theozaurus/drawing-fabric.js/master/demo/vendor/spectrum.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <div id="root" style="height: 100%;"></div>
+    <!-- This script adds the Roboto font to our project. For more detail go to this site:  http://www.google.com/fonts#UsePlace:use/Collection:Roboto:400,300,500 -->
+    <script>
+      var WebFontConfig = {
+        google: { families: [ 'Roboto:400,300,500:latin' ] }
+      };
+      (function() {
+        var wf = document.createElement('script');
+        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+          '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+      })();
+    </script>
+    <script src="/vendor.bundle.js"></script>
+    <script src="/bundle.js"></script>
+  </body>
+</html>
