@@ -1,0 +1,20 @@
+.navbar{
+  height: 48px;
+  background-color: #00bcd4;
+}
+
+.button-groups{
+  width: 1300px;
+  margin: auto;
+}
+
+.button{
+  padding: 6px 12px !important;
+  height: 48px !important;
+  color: hsla(0,0%,100%,.7) !important;
+}
+
+.button.active{
+  color: #fff !important;
+  border-bottom: 3px solid rgb(255, 64, 129) !important;
+}

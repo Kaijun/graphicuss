@@ -1,0 +1,19 @@
+.add-btn{
+  position: fixed !important;
+  z-index: 1000 !important;
+}
+
+.cards-wrapper{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.card{
+  margin: 0 24px 24px 0 ;
+  width: 396px;
+  display: flex;
+}

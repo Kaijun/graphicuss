@@ -9,15 +9,15 @@ class ContentSection extends Component {
   }
 
   renderFooter() {
-    
+
   }
 
   render() {
     const { children } = this.props
     return (
-      <div>
+      <section className={style['section']}>
         {children}
-      </div>
+      </section>
     )
   }
 }

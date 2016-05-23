@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 import React from 'react'
 
 import App from './containers/App'
-import MainView from './containers/MainView'
+import IndexView from './containers/IndexView'
 import SearchView from './components/SearchView'
 import AuthView from './components/AuthView'
 import CoursesView from './components/CoursesView'
@@ -27,12 +27,14 @@ ReactDOM.render(
             <Route name='auth.login' path="login" component={AuthView} />
             <Route name='auth.signup' path="signup" component={AuthView} />
           </Route>
-          <Route component={MainView}>
+          <Route component={IndexView}>
             <Route name='search' path="search" component={SearchView} />
             <Route name='courses' path="courses" component={CoursesView} />
-            <Route name='questions' path="courses/:courseId" component={QuestionsView} />
-            <Route name='answers' path="questions/:questionId" component={AnswersView} />
           </Route>
+
+          <Route name='questions' path="courses/:courseId" component={QuestionsView} />
+          <Route name='answers' path="questions/:questionId" component={AnswersView} />
+
         </Route>
       </Router>
     </Provider>,

@@ -4,7 +4,9 @@ import { Link } from 'react-router'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Card, CardActions, CardHeader, CardMedia, CardTitle, FlatButton, RaisedButton, CardText, Avatar, GridList, GridTile, Dialog, TextField } from 'material-ui'
+import { Card, CardActions, CardHeader, CardMedia, CardTitle, FlatButton, FloatingActionButton, CardText, Avatar, GridList, GridTile, Dialog, TextField } from 'material-ui'
+import ContentAdd from 'material-ui/svg-icons/content/add';
+
 import RichTextEditor from '../RichTextEditor'
 import style from './style.css'
 import {actions as coursesAction} from '../../redux/modules/courses'
@@ -20,12 +22,12 @@ class CoursesView extends React.Component {
 
   renderCourses(){
     const { courses } = this.props
-    return courses.map(function (course) {
-      return (
-        <GridTile key={course._id} >
-          <Link to={`/courses/${course._id}`}>
-            <Card >
-              <CardMedia overlay={<CardTitle title={course.name} subtitle={course.desc}/>}>
+    return (
+      <div className={style['cards-wrapper']}>
+        {
+          courses.map( (course) =>
+            <Card className={style['card']} >
+              <CardMedia overlay={<CardTitle title={course.name} />}>
                 <img src="http://lorempixel.com/600/337/nature/"/>
               </CardMedia>
               <CardHeader
@@ -33,11 +35,32 @@ class CoursesView extends React.Component {
                 subtitle={'Informatik'}
                 avatar={<Avatar style={{color: 'red'}}>{course.creator.username.charAt(0)}</Avatar>}/>
             </Card>
-          </Link>
-        </GridTile>
-      )
-    })
+          )
+        }
+      </div>
+    )
 
+  }
+  renderAddButton(){
+    const offsetRight = (window.innerWidth - 1300)>0 ? (window.innerWidth - 1300)/2+36 : 36 ;
+    console.log(this.props.user)
+    return (
+      <div>
+        {
+          this.props.user&&this.props.user.tutor ?
+            <FloatingActionButton
+              className={style['add-btn']}
+              style={{bottom: '36px', right: offsetRight+'px'}}
+              secondary={true}
+              onTouchTap={this.handleNewCourseDialogOpen}
+            >
+              <ContentAdd />
+            </FloatingActionButton>
+            :
+            null
+        }
+      </div>
+    )
   }
 
   handleNewCourseDialogClose = () => {
@@ -59,6 +82,7 @@ class CoursesView extends React.Component {
   };
   render() {
     const courses  = this.renderCourses();
+    const addButton  = this.renderAddButton();
 
     const actions = [
       <FlatButton
@@ -74,21 +98,9 @@ class CoursesView extends React.Component {
 
     return (
       <div>
+        {addButton}
 
-        <h1 style={{display: 'inline-block', margin: '0 24px 24px 0'}}>Courses</h1>
-        {this.props.user&&this.props.user.tutor?(<RaisedButton label="New Course" primary={true} onTouchTap={this.handleNewCourseDialogOpen}/>):''}
-
-
-        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-          {/*Grid list with all possible overrides*/}
-          <GridList
-            cols={3}
-            padding={24}
-            cellHeight={270}
-          >
-            {courses}
-          </GridList>
-
+        {courses}
 
           <Dialog
             title="New Course"
@@ -106,7 +118,6 @@ class CoursesView extends React.Component {
             <RichTextEditor
               ref='newCourseDesc' />
           </Dialog>
-        </div>
       </div>
     )
   }

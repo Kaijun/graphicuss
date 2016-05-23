@@ -1,0 +1,49 @@
+.app-bar{
+  height: 65px;
+  max-width: 100vw;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+  background-color: #00bcd4;
+  color: #fff;
+  z-index: 99;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  display: flex;
+  top: 0;
+  align-items: center;
+}
+.left{
+  flex: 2;
+}
+.center{
+  flex: 4;
+}
+.right{
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.logo{
+  vertical-align: initial;
+  min-width: 40px;
+}
+.title{
+  font-size: 20px;
+  margin-left: 16px;
+  font-weight: 400;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.menu-item{
+  padding: 10px;
+  margin-left: 5px;
+  height: 20px;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 14px;
+  color: #fff;
+}
