@@ -303,7 +303,9 @@ html [type="button"], /* 1 */
 [type="submit"] {
   -webkit-appearance: button; /* 2 */
 }
-
+html [type="button"]{
+  -webkit-appearance: none; /* 2 */
+}
 /**
  * Remove the inner border and padding in Firefox.
  */
@@ -417,4 +419,13 @@ textarea {
 ::-webkit-file-upload-button {
   -webkit-appearance: button; /* 1 */
   font: inherit; /* 2 */
+}
+
+
+html{
+  height: 100%;
+}
+
+body{
+  height: 100%;
 }

@@ -91,12 +91,10 @@ const passportConf= (passport) => {
                 newUser.email    = email;
                 newUser.password = newUser.generateHash(password);
                 newUser.username = req.body.username;
-                console.log(newUser)
+                newUser.faculty = req.body.faculty;
                 newUser.save((err) => {
-                  console.log(err)
                   if (err) return done(err);
                   newUser = newUser.toObject()
-                  console.log(newUser)
                   req.user = newUser
                   return done(null, newUser);
                 });

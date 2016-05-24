@@ -2,17 +2,46 @@
 import React, { Component, PropTypes } from 'react'
 import style from './style.css'
 
+import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, IconButton, List, ListItem} from 'material-ui';
+import TouchIcon from 'material-ui/svg-icons/action/touch-app';
+import EclipseIcon from 'material-ui/svg-icons/image/panorama-fish-eye';
+import RectangleIcon from 'material-ui/svg-icons/image/crop-din';
+import TriangleIcon from 'material-ui/svg-icons/action/change-history';
+import LineIcon from 'material-ui/svg-icons/content/remove';
+import DrawIcon from 'material-ui/svg-icons/content/create';
+import ArcIcon from 'material-ui/svg-icons/image/brightness-3';
+import TextIcon from 'material-ui/svg-icons/editor/text-fields';
+import ColorIcon from 'material-ui/svg-icons/editor/text-fields';
+import BorderColorIcon from 'material-ui/svg-icons/editor/border-color';
+import FillColorIcon from 'material-ui/svg-icons/editor/format-color-fill';
+import BrushIcon from 'material-ui/svg-icons/image/brush';
+
 class WhiteBoard extends Component {
   constructor(props, context) {
     super(props, context)
+    this.canvas = null;
+    this.state = {
+      drawingHistory: [],
+      selectedHistoryIdx: 0,
+    };
   }
 
   exportCanvas() {
-    return JSON.stringify(this.state.canvas.fabricCanvas)
+    return JSON.stringify(this.canvas.fabricCanvas)
+  }
+
+  loadCanvasWithInit(json) {
+    this.loadCanvas(json)
+    this.setState({
+      drawingHistory: [{
+        time: new Date(),
+        json: json
+      }]
+    })
   }
 
   loadCanvas(json) {
-    let canvas = this.state.canvas.fabricCanvas
+    let canvas = this.canvas.fabricCanvas
     //clear canvas
     canvas.clear();
     //load from localStorage
@@ -24,17 +53,49 @@ class WhiteBoard extends Component {
   }
 
   clearCanvas() {
-    let canvas = this.state.canvas.fabricCanvas
+    let canvas = this.canvas.fabricCanvas
     //clear canvas
     canvas.clear();
     canvas.renderAll();
   }
 
+  listenChange() {
+    let canvas = this.canvas.fabricCanvas;
+    this.addDrawingHistory(this.exportCanvas())
+    canvas.on('mouse:up', (event) => {
+      console.log(event)
+      let str = this.exportCanvas();
+      if(str === this.state.drawingHistory[0].json){
+      }
+      else{
+        this.addDrawingHistory(str)
+      }
+    })
+  }
+
+  addDrawingHistory(canvasJson) {
+    let newHistory = [{
+      time: new Date(),
+      json: canvasJson
+    }].concat(this.state.drawingHistory)
+    this.setState({
+      drawingHistory: newHistory
+    })
+  }
+
+  onHistoryClick = (history, idx) => {
+    let json = history.json
+    this.loadCanvas(json);
+    this.setState({
+      selectedHistoryIdx: idx
+    })
+  }
+
   componentDidMount () {
     let _self = this
     $(function(){
-      var c = new DrawingFabric.Canvas('canvas');
-
+      var c = new DrawingFabric.Canvas('drawingCanvas');
+      console.log(c)
       c.addFunctionality(new DrawingFabric.Functionality.keyboardEvents()); // Required by keybaordCommands
       c.addFunctionality(new DrawingFabric.Functionality.keyboardCommands());
 
@@ -49,10 +110,6 @@ class WhiteBoard extends Component {
         text:      $('.js-tools-text')
       }));
       c.addFunctionality(new DrawingFabric.Functionality.selectWithCursor());
-      c.addFunctionality(new DrawingFabric.Functionality.mouseInfo({
-        x:    $('.js-mouse-info-x'),
-        y:    $('.js-mouse-info-y')
-      }));
       c.addFunctionality(new DrawingFabric.Functionality.addDoubleClick());
       c.addFunctionality(new DrawingFabric.Functionality.addText());
       c.addFunctionality(new DrawingFabric.Functionality.drawWithMouse());
@@ -72,26 +129,6 @@ class WhiteBoard extends Component {
           value: $ ('.js-selected-properties-fill-value'),
           parent: $('.js-selected-properties-fill')
         },
-        fontFamily: {
-          value:  $('.js-selected-properties-font-family-value'),
-          parent: $('.js-selected-properties-font-family')
-        },
-        fontSize: {
-          value:  $('.js-selected-properties-font-size-value'),
-          parent: $('.js-selected-properties-font-size')
-        },
-        lineHeight: {
-          value:  $('.js-selected-properties-line-height-value'),
-          parent: $('.js-selected-properties-line-height')
-        },
-        fontStyle: {
-          value:  $('.js-selected-properties-font-style-value'),
-          parent: $('.js-selected-properties-font-style')
-        },
-        fontWeight: {
-          value:  $('.js-selected-properties-font-weight-value'),
-          parent: $('.js-selected-properties-font-weight')
-        }
       }));
 
       // Customise buttons
@@ -115,142 +152,73 @@ class WhiteBoard extends Component {
         });
       });
 
-      //// Turn checkboxes into toggle buttons
-      $('.js-bootstrap-toggle').each(function(i,e){
-        var $e = $(e);
 
-        var $input = $e.find('input');
-
-        // Find input and hide it
-        $input.hide();
-
-        // Wrap with boot strap toggle button
-        $e.wrap('<button type="button" className="btn" data-toggle="button"></button>');
-
-        // Make button strap toggle button match value of checkbox
-        var $button = $e.parents('button');
-        if($input.is(':checked')){ $button.button('toggle'); }
-
-        $input.change(function(){
-          if( $input.is(':checked') != $button.hasClass('active')){
-            $button.button('toggle');
-          }
-        });
-
-        $button.click(function(){
-          $input.prop('checked',$button.hasClass('active'));
-        });
-
-      });
-
-      _self.setState({canvas: c})
-
+      _self.canvas = c;
+      _self.listenChange();
     })
   }
 
   render() {
+
+    let { drawingHistory, selectedHistoryIdx } = this.state
+
     return (
-      <div className="container">
-          <div className="btn-group">
-            <button className="btn js-tools-cursor"><i className='icon-hand-up'></i></button>
-            <button className="btn js-tools-ellipse"><i className='icon-vector_path_circle'></i></button>
-            <button className="btn js-tools-rectangle"><i className='icon-vector_path_square'></i></button>
-            <button className="btn js-tools-triangle"><i className='icon-vector_path_triangle'></i></button>
-            <button className="btn js-tools-line"><i className='icon-vector_path_line'></i></button>
-            <button className="btn js-tools-draw"><i className='icon-pencil'></i></button>
-            <button className="btn js-tools-arc"><i className='icon-vector_path_curve'></i></button>
-            <button className="btn js-tools-text"><i className='icon-text-resize'></i></button>
-          </div>
-         <div className="row">
+      <div className={style['container']}>
+        <Toolbar>
+          <ToolbarGroup className={style['tool-btn-group']} >
+            <IconButton className="js-tools-cursor"><TouchIcon /></IconButton>
+            <IconButton className="js-tools-ellipse"><EclipseIcon /></IconButton>
+            <IconButton className="js-tools-rectangle"><RectangleIcon /></IconButton>
+            <IconButton className="js-tools-triangle"><TriangleIcon /></IconButton>
+            <IconButton className="js-tools-line"><LineIcon /></IconButton>
+            <IconButton className="js-tools-draw"><DrawIcon /></IconButton>
+            <IconButton className="js-tools-arc"><ArcIcon /></IconButton>
+            <IconButton className="js-tools-text"><TextIcon /></IconButton>
+          </ToolbarGroup>
+          <ToolbarGroup className={style['modify-tool-group']} >
+            <span className="js-selected-properties-stroke-width">
+              <BrushIcon></BrushIcon>
+              <select className="js-selected-properties-stroke-width-value span1">
+                <option value='1'>1</option>
+                <option value='2'>2</option>
+                <option value='3'>3</option>
+                <option value='4'>4</option>
+                <option value='5'>5</option>
+                <option value='6'>6</option>
+                <option value='7'>7</option>
+                <option value='8'>8</option>
+                <option value='9'>9</option>
+                <option value='10'>10</option>
+              </select>
+            </span>
+            <span className="js-selected-properties-fill">
+              <FillColorIcon></FillColorIcon>
+              <input type='text' className='js-selected-properties-fill-value js-color'></input>
+            </span>
+            <span className="js-selected-properties-stroke">
+              <BorderColorIcon></BorderColorIcon>
+              <input type='text' className='js-selected-properties-stroke-value js-color'></input>
+            </span>
+          </ToolbarGroup>
+        </Toolbar>
+        <div className={style['canvas-section']}>
+          <canvas id='drawingCanvas' width='750px' height='600px'></canvas>
 
-           <div className="span7">
-             <div className="img-polaroid inline">
-               <canvas id='canvas' width='530px' height='500px'></canvas>
-             </div>
-           </div>
 
-           <div className="span3">
-             <div className='mouse-info well'>
-               <ul>
-                 <dt>X</dt>
-                 <dd className='js-mouse-info-x'></dd>
-                 <dt>Y</dt>
-                 <dd className='js-mouse-info-y'></dd>
-               </ul>
-             </div>
-             <div className='properties well'>
-               <dl>
-                 <dt className="js-selected-properties-stroke-width">Stroke Width</dt>
-                 <dd className="js-selected-properties-stroke-width">
-                   <select className="js-selected-properties-stroke-width-value span1">
-                     <option value='1'>1</option>
-                     <option value='2'>2</option>
-                     <option value='3'>3</option>
-                     <option value='4'>4</option>
-                     <option value='5'>5</option>
-                   </select>
-                 </dd>
+          <List className={style['process']}>
+            {
+              drawingHistory.map((history, idx) =>
+                <ListItem
+                  className={selectedHistoryIdx===idx?style['active']:null}
+                  key={idx}
+                  primaryText={`${history.time.toLocaleDateString()} - ${history.time.toLocaleTimeString()}`}
+                  onTouchTap={this.onHistoryClick.bind(this, history, idx)}
+                />
+              )
+            }
+          </List>
 
-                 <dt className="js-selected-properties-fill">Fill</dt>
-                 <dd className="js-selected-properties-fill">
-                   <input type='text' className='js-selected-properties-fill-value span1 js-color'></input>
-                 </dd>
-
-                 <dt className="js-selected-properties-stroke">Stroke</dt>
-                 <dd className="js-selected-properties-stroke">
-                   <input type='text' className='js-selected-properties-stroke-value span1 js-color'></input>
-                 </dd>
-
-                 <dt className="js-selected-properties-font-family">Font Family</dt>
-                 <dd className="js-selected-properties-font-family">
-                   <select type="text" className="js-selected-properties-font-family-value span2">
-                     <option value='sans-serif'>Sans Serif</option>
-                     <option value='serif'>Serif</option>
-                     <option value='cursive'>Cursive</option>
-                     <option value='fantasy'>Fantasy</option>
-                     <option value='monospace'>Monospace</option>
-                   </select>
-                 </dd>
-
-                 <dt className="js-selected-properties-font-size">Font Size</dt>
-                 <dd className="js-selected-properties-font-size">
-                   <select type="text" className="js-selected-properties-font-size-value span1">
-                     <option value='24'>24</option>
-                     <option value='36'>36</option>
-                     <option value='48'>48</option>
-                     <option value='64'>64</option>
-                     <option value='72'>72</option>
-                   </select>
-                 </dd>
-
-                 <dt className="js-selected-properties-line-height">Line height</dt>
-                 <dd className="js-selected-properties-line-height">
-                   <select type="text" className="js-selected-properties-line-height-value span1">
-                     <option value='0.8'>0.8</option>
-                     <option value='0.9'>0.9</option>
-                     <option value='1'>1</option>
-                     <option value='1.1'>1.1</option>
-                     <option value='1.2'>1.2</option>
-                     <option value='1.3'>1.3</option>
-                   </select>
-                 </dd>
-
-                 <dt className="js-selected-properties-font-style">Italic</dt>
-                 <dd className="js-selected-properties-font-style">
-                   <label className="js-bootstrap-toggle"><input className="btn js-selected-properties-font-style-value" type="checkbox" value="italic"/><i className='icon-italic'></i></label>
-                 </dd>
-
-                 <dt className="js-selected-properties-font-weight">Bold</dt>
-                 <dd className="js-selected-properties-font-weight">
-                   <label className="js-bootstrap-toggle"><input className="btn js-selected-properties-font-weight-value" type="checkbox" value="bold"/><i className='icon-bold'></i></label>
-                 </dd>
-
-               </dl>
-             </div>
-           </div>
-
-         </div>
-
+        </div>
 
        </div>
     )

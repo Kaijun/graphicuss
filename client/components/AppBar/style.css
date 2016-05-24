@@ -30,6 +30,7 @@
   min-width: 40px;
 }
 .title{
+  display: inline;
   font-size: 20px;
   margin-left: 16px;
   font-weight: 400;
@@ -37,6 +38,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.back-icon{
+  fill:  #fff !important;
 }
 .menu-item{
   padding: 10px;

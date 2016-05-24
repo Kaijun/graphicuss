@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import Question from './Question'
 const Schema = mongoose.Schema
 
 var answerSchema = mongoose.Schema({
@@ -24,11 +25,27 @@ answerSchema.method.remove = function() {
 // statics ======================
 // get all questions
 answerSchema.statics.list = function(questionId) {
-  return this.find({'question': questionId}).sort('+vote').populate('creator').exec()
+  return this.find({'question': questionId}).sort('+vote').populate('creator quotedAnswer').exec()
 }
 // get one questions
 answerSchema.statics.load = function(_id) {
-  return this.findById(_id).populate('creator').exec()
+  return this.findById(_id).populate('creator quotedAnswer').exec()
 }
 
-export default mongoose.model('Answer', answerSchema)
+
+
+const answerModel = mongoose.model('Answer', answerSchema);
+
+// Hooks ======================
+// Auto increm answerCounts in Question Model
+var answersCountIncrementHook = (doc) =>{
+    answerModel.find({question: doc.question}).then((answers) => {
+      let answerCounts = answers.length
+      Question.findByIdAndUpdate(doc.question, {answerCounts: answerCounts}).then(() => {})
+    })
+}
+answerSchema.post('save', answersCountIncrementHook)
+answerSchema.post('remove', answersCountIncrementHook)
+
+
+export default answerModel

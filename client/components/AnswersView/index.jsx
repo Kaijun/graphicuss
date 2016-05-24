@@ -5,8 +5,11 @@ import { Link } from 'react-router'
 import WhiteBoard from '../WhiteBoard'
 import StaticCanvas from '../StaticCanvas'
 import RichTextEditor from '../RichTextEditor'
+import EditorComposed from '../EditorComposed'
 
-import { Toggle, Paper, Avatar, TextField, RaisedButton, Card, CardActions, CardHeader, CardMedia, CardTitle, FlatButton, CardText, Divider } from 'material-ui';
+import { Toggle, Paper, Avatar, TextField, RaisedButton, Card, CardActions, CardHeader, CardMedia, CardTitle, FlatButton, CardText, Divider, Dialog, IconButton } from 'material-ui';
+
+import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -19,7 +22,9 @@ class AnswersView extends React.Component {
     super(props)
     this.questionId = this.props.params.questionId
     this.state = {
-      isPaintingMode: true,
+      isLargeCanvasDialogOpen: false,
+      dialogCanvasJSON: null,
+      quotedAnswer: null,
     }
   }
 
@@ -37,9 +42,13 @@ class AnswersView extends React.Component {
   }
 
   quoteAnswerHandler = (answer) => {
-    if(answer.canvas.length>0){
-      this.refs.whiteBoard.loadCanvas(answer.canvas)
-    }
+    this.setState({
+      quotedAnswer: answer
+    }, () => {
+      if(answer.canvas){
+        this.refs.editorComposed.setCanvas(answer.canvas)
+      }
+    })
   }
   upvoteAnswerHandler = (answerId) => {
     // this.props.answersAction.upvoteAnswer(answerId)
@@ -51,21 +60,26 @@ class AnswersView extends React.Component {
 
   postNewAnswerHandler = (e) => {
     // let content = this.refs.newAnswerContent.getValue();
-    let content = '';
-    let canvas = this.refs.whiteBoard.exportCanvas();
-    this.props.answersAction.newAnswer(this.questionId, {content, canvas}).then(() => {
-      this.refs.whiteBoard.clearCanvas()
+    let content = this.refs.editorComposed.getText();
+    let canvas = this.refs.editorComposed.getCanvas();
+    let quotedAnswer = this.state.quotedAnswer ? this.state.quotedAnswer._id : null;
+    this.props.answersAction.newAnswer(this.questionId, {content, canvas, quotedAnswer}).then(() => {
+      this.refs.editorComposed.setText('');
+      this.refs.editorComposed.clearCanvas();
+      this.setState({
+        quotedAnswer: null
+      })
     })
   }
 
-  onEditModeToggle = (e) => {
+  toggleLargeCanvasDialog = (open, json) => {
     this.setState({
-      isPaintingMode: !this.state.isPaintingMode
+      isLargeCanvasDialogOpen: open,
+      dialogCanvasJSON: json
     })
   }
 
   render() {
-    console.log(this.props.question)
     if(!this.props.question._id){
       return <div>Loading...</div>
     }
@@ -73,7 +87,7 @@ class AnswersView extends React.Component {
     const answers = this.props.answers
     return (
 
-      <div >
+      <div className={style['container']} >
         <Card >
           <CardTitle title={
               <span> {question.title} </span>
@@ -99,12 +113,35 @@ class AnswersView extends React.Component {
 
         {
           answers.map((answer) => (
-              <Card style={{marginBottom: 10}} key={answer._id}>
+              <Card style={{marginBottom: 10}} key={answer._id} id={answer._id}>
+                { answer.quotedAnswer && answer.quotedAnswer._id ?
+                  <div className={style['answer-quote']}>
+                    Quoted From: <a href={'#' + answer.quotedAnswer._id}>{ '# ' + (answers.map((answer)=>answer._id).indexOf(answer.quotedAnswer._id)+1) }</a>
+                  </div>
+                  :
+                  null
+                }
                 <CardText>
-                  {answer.content}
-                  {
-                    answer.canvas.length>0 && (<StaticCanvas canvasJSON={answer.canvas}/>)
-                  }
+                  <div className={style['answer-section']}>
+
+                      {
+                        answer.content.length>0 && (
+                          <div className={style['answer-content']} dangerouslySetInnerHTML={{__html: answer.content}}></div>
+                        )
+                      }
+
+                      {
+                        answer.canvas.length>0 && (
+                          <div
+                            className={style[answer.content ? 'answer-canvas-sm' : '']}
+                            onClick={this.toggleLargeCanvasDialog.bind(this, true, answer.canvas)}
+                          >
+                            <StaticCanvas canvasJSON={answer.canvas}/>
+                          </div>
+                        )
+                      }
+
+                  </div>
                 </CardText>
                 <CardActions>
                   <FlatButton onClick={this.upvoteAnswerHandler.bind(this, answer._id)}  label="Up" />
@@ -119,36 +156,33 @@ class AnswersView extends React.Component {
         }
 
         <div>
-          <h3>Your Answer</h3>
-          <Divider style={{margin: '20px 0'}} />
-          <Toggle
-            label="Painting Mode"
-            labelPosition="right"
-            defaultToggled = {this.state.isPaintingMode}
-            ref="editModeToggle"
-            onToggle = {this.onEditModeToggle}
-            style={{maxWidth: 250}}
-          />
+          {
+            this.state.quotedAnswer ?
+            <div className={style['answer-quote']}>
+              You are quoting: <a href={'#' + this.state.quotedAnswer._id}>{ '# ' + (answers.map((answer)=>answer._id).indexOf(this.state.quotedAnswer._id)+1) }</a>
+              <CancelIcon  onClick={()=>{this.setState({quotedAnswer: null}); this.refs.editorComposed.clearCanvas();}} ></CancelIcon>
+            </div>
+            :
+            null
+          }
+          <div style={{marginTop: '12px'}}>
+            <EditorComposed ref="editorComposed"></EditorComposed>
+            <RaisedButton label="Submit" secondary={true} onTouchTap={this.postNewAnswerHandler} />
+          </div>
         </div>
-        <Card>
-          <CardText>
-{/*
-            <TextField
-              ref='newAnswerContent'
-              hintText="Write your answer here. "
-              multiLine={true}
-              style={{width: '100%'}}
-              rows={10}
-              rowsMax={10}
-            />
-*/}
-          {this.state.isPaintingMode? <WhiteBoard ref="whiteBoard" />:<RichTextEditor />}
-          </CardText>
-          <CardActions >
-            <RaisedButton onClick={this.postNewAnswerHandler}  label="Post" secondary={true} />
-          </CardActions>
-        </Card>
 
+        <Dialog
+          title={null}
+          bodyStyle={{maxHeight: 'inherit !important'}}
+          contentStyle={{maxWidth: 'inherit'}}
+          actions={[
+            <RaisedButton label="Confirm" onTouchTap={this.toggleLargeCanvasDialog.bind(this, false, null)} />
+          ]}
+          modal={false}
+          open={this.state.isLargeCanvasDialogOpen}
+        >
+          <StaticCanvas canvasJSON={this.state.dialogCanvasJSON} ></StaticCanvas>
+        </Dialog>
       </div>
 
     )

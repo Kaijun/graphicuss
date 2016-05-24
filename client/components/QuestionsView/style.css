@@ -1,0 +1,23 @@
+.container{
+  max-width: 1024px;
+  margin: auto;
+  position: relative;
+  top: -128px;
+}
+
+.question-table{
+  margin-top: 32px;
+}
+
+.question-title{
+  cursor: 'pointer';
+  font-size: 15px;
+  text-decoration: none;
+  color: #07C;
+}
+.question-title:visited{
+  color: #005999;
+}
+.question-title:hover{
+  color: #0198FF;
+}

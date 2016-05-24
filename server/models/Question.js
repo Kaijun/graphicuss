@@ -9,6 +9,7 @@ var questionSchema = mongoose.Schema({
   acceptedAnswer : { type: Schema.Types.ObjectId, ref: 'Answer' },
   deleted : {type: Boolean, default: false},
   vote: {type: Number, default: 0},
+  answerCounts: {type: Number, default: 0},
 }, {timestamps: true});
 
 

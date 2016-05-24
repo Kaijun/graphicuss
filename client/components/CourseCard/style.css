@@ -1,0 +1,19 @@
+
+.card{
+  margin: 0 12px 24px 12px ;
+  width: 396px;
+  display: flex;
+}
+
+.card-bottom{
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-bottom .info{
+  flex: 1;
+}
+
+.card-bottom .actions{
+  flex: 1;
+}

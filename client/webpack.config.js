@@ -20,11 +20,13 @@ module.exports = {
         loader: 'file?name=[name].[ext]'
       },
       {
-        test: /\.css$/,
+        test: /\.(css|scss|sass)$/,
         include: /client/,
         loaders: [
           'style',
           'css?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
+          'resolve-url',
+          'sass?sourceMap',
           'postcss'
         ]
       },

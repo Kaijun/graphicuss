@@ -36,8 +36,9 @@ export default class RichEditorExample extends React.Component {
   }
 
   render() {
+    let {className} = this.props
     return (
-      <div>
+      <div className={className}>
         <textarea ref='textarea' />
       </div>
     )

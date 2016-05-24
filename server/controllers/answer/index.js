@@ -18,10 +18,11 @@ export const newAnswer = (req, res, next) => {
   Answer.create({
     content: req.body.content || '',
     canvas: req.body.canvas || '',
+    quotedAnswer: req.body.quotedAnswer || undefined,
     question: req.query.questionId,
     creator: req.user._id,
   }).then((answer) => {
-    return Answer.populate(answer, {path:"creator"})
+    return Answer.populate(answer, {path:"creator quotedAnswer"})
   }, (err) => {
     res.status(404).json(err)
   }).then((answer) => {

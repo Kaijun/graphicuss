@@ -1,38 +1,36 @@
-import React, { Component, PropTypes } from 'react';
-import cx from 'classnames';
-import { TextField } from 'material-ui';
+import React, { Component, PropTypes } from 'react'
+import cx from 'classnames'
+import {FlatButton, Dialog, TextField } from 'material-ui'
+import CourseCard from '../CourseCard'
 import SearchIcon from 'material-ui/svg-icons/action/search'
 
 import style from './style.css'
 
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import {actions as searchCourse} from '../../redux/modules/searchCourse'
+
 const ENTER_KEY = 13;
 
-export default class SearchBox extends Component {
+class SearchBox extends Component {
 
     static propTypes = {
-        search   : PropTypes.string,
-        onSearch : PropTypes.func
     };
 
-    static contextTypes = { i18n: PropTypes.object };
-
     state = {
-        isFocused: false
+        isFocused: false,
+        dialogOpen: false
     };
 
     handleKeyDown = (e) => {
         if (e.keyCode === ENTER_KEY) {
-            this.props.onSearch(e.target.value);
+          let courseCode = this._input.value;
+          this.props.searchCourseAction.searchCourse(courseCode).then(() => {
+            this.handleDialogOpen()
+          })
         }
     };
 
-    handleSearchChange = (e) => {
-        const value = e.target.value;
-
-        if (!value) {
-            this.props.onSearch(value);
-        }
-    };
 
     handleBoxClick = () => {
         this._input.focus();
@@ -49,6 +47,37 @@ export default class SearchBox extends Component {
             isFocused: false
         });
     };
+
+    handleDialogOpen = () => {
+      this.setState({dialogOpen: true});
+    }
+
+    handleDialogClose = () => {
+      this.setState({dialogOpen: false});
+    }
+
+    renderCourseDialog() {
+        let isCourseFound =  this.props.searchCourse._id?true:false
+        const dialogTitle = !isCourseFound? "Not Found" : "Course Found"
+        const dialogContent = !isCourseFound? "Course Not Found, Please try again!" : (
+          <CourseCard course={this.props.searchCourse}></CourseCard>
+        )
+
+        return (
+          <Dialog
+            className={style['dialog']}
+            contentClassName={style['dialog-content']}
+            bodyClassName={style['dialog-body']}
+            title={dialogTitle}
+            modal={false}
+            onRequestClose={this.handleDialogClose}
+            open={this.state.dialogOpen}
+          >
+            {dialogContent}
+          </Dialog>
+      )
+
+    }
 
     render() {
         const { search } = this.props;
@@ -68,13 +97,31 @@ export default class SearchBox extends Component {
                 ref          = {ref => this._input = ref}
                 placeholder  = {'Search'}
                 defaultValue = {search}
-                onChange     = {this.handleSearchChange}
                 onKeyDown    = {this.handleKeyDown}
                 onFocus      = {this.handleFocus}
                 onBlur       = {this.handleBlur}
               />
             </div>
+            {this.renderCourseDialog()}
           </div>
         );
     }
 }
+
+
+function mapStateToProps (state) {
+  return {
+    searchCourse: state.searchCourse,
+  }
+}
+
+function mapDispatchToProps (dispatch) {
+  return {
+    searchCourseAction: bindActionCreators(searchCourse, dispatch)
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchBox)

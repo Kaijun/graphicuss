@@ -1,0 +1,36 @@
+.container{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;;
+}
+
+.text-editor{
+  width: 700px;
+  min-height: 350px;
+}
+
+.small-canvas{
+  canvas{
+    border: 2px solid rgb(232, 232, 232);
+    cursor: pointer;
+    height: 300px !important;
+    width: 300px !important;
+  }
+}
+
+.title{
+  font-size: 20px;
+  padding: 16px 0;
+  text-align: center;
+}
+
+.tip{
+  text-align: center;
+  font-size: 14px;
+  padding: 8px 0;
+  color: #BBBBBB;
+}
+
+.whiteboard-container{
+  
+}

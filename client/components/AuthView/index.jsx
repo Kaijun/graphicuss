@@ -21,7 +21,6 @@ class AuthView extends React.Component {
   }
 
   toView = ()=>{
-    console.log(123)
     this.setState({isLoginView: false})
   }
 

@@ -33,8 +33,18 @@ class IndexView extends Component {
 
 }
 
-IndexView.propTypes = {
-
+function mapStateToProps (state) {
+  return {
+    user: state.user,
+  }
 }
 
-export default IndexView
+function mapDispatchToProps (dispatch) {
+  return {
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(IndexView)

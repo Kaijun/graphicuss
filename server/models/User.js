@@ -7,6 +7,7 @@ var userSchema = mongoose.Schema({
   username: String,
   email: {type: String, lowercase: true, trim: true, unique: true},
   password: {type: String, select: false},
+  faculty: {type: String, default: ''},
   tutor: {type: Boolean, default: false},
   admin: {type: Boolean, default: false},
   subscriptions: {type: [{type: Schema.Types.ObjectId, ref: 'Course'}], default: []}

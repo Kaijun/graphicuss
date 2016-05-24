@@ -1,0 +1,48 @@
+.container{
+
+  .tool-btn-group{
+    padding-top: 3px;
+    button{
+      svg{
+        fill: rgb(0, 188, 212) !important;
+      }
+    }
+
+    :global button.active{
+      svg{
+        fill: rgb(255, 64, 129) !important;
+      }
+    }
+  }
+
+  .modify-tool-group{
+    padding-top: 7px;
+    svg{
+      fill: rgb(0, 188, 212) !important;
+      position: relative;
+      top: 7px;
+      margin: 0 12px 0 32px;
+    }
+  }
+
+}
+
+.canvas-section{
+  margin-top: 24px;
+  display: flex;
+  align-items: flex-start;
+  canvas{
+    border: 2px solid rgb(232, 232, 232);
+  }
+
+  .process{
+    margin-left: 12px;
+    padding: 8px 10px;
+    overflow-y: scroll;
+    height: 580px;
+
+    .active{
+      color: rgb(0, 188, 212) !important;
+    }
+  }
+}

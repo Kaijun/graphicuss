@@ -8,6 +8,7 @@ import { Card, CardActions, CardHeader, CardMedia, CardTitle, FlatButton, Floati
 import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import RichTextEditor from '../RichTextEditor'
+import CourseCard from '../CourseCard'
 import style from './style.css'
 import {actions as coursesAction} from '../../redux/modules/courses'
 
@@ -26,15 +27,7 @@ class CoursesView extends React.Component {
       <div className={style['cards-wrapper']}>
         {
           courses.map( (course) =>
-            <Card className={style['card']} >
-              <CardMedia overlay={<CardTitle title={course.name} />}>
-                <img src="http://lorempixel.com/600/337/nature/"/>
-              </CardMedia>
-              <CardHeader
-                title={course.creator.username}
-                subtitle={'Informatik'}
-                avatar={<Avatar style={{color: 'red'}}>{course.creator.username.charAt(0)}</Avatar>}/>
-            </Card>
+            <CourseCard course={course} key={course._id}></CourseCard>
           )
         }
       </div>
