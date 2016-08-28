@@ -7,7 +7,7 @@ module.exports = {
   entry: {
     jsx: './index.js',
     html: './index.html',
-    vendor: ['react']
+    vendor: ['react', 'jquery']
   },
   output: {
     path: path.join(__dirname, '../dist', 'static'),

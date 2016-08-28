@@ -149,7 +149,7 @@ class AnswersView extends React.Component {
                             className={style[answer.content ? 'answer-canvas-sm' : '']}
                             onClick={this.toggleLargeCanvasDialog.bind(this, true, answer.canvas)}
                           >
-                            <StaticCanvas canvasJSON={answer.canvas}/>
+                            <StaticCanvas canvasJSON={answer.canvas} height="300" width="375"/>
                           </div>
                         )
                       }
@@ -195,7 +195,7 @@ class AnswersView extends React.Component {
           modal={false}
           open={this.state.isLargeCanvasDialogOpen}
         >
-          <StaticCanvas canvasJSON={this.state.dialogCanvasJSON} ></StaticCanvas>
+          <StaticCanvas canvasJSON={this.state.dialogCanvasJSON} height="600" width="750" ></StaticCanvas>
         </Dialog>
       </div>
 

@@ -1,5 +1,5 @@
 import { Provider } from 'react-redux'
-import { Router, Route, browserHistory, Redirect } from 'react-router'
+import { Router, Route, browserHistory, IndexRedirect } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import ReactDOM from 'react-dom'
 import React from 'react'
@@ -27,6 +27,7 @@ ReactDOM.render(
             <Route name='auth.signup' path="signup" component={AuthView} />
           </Route>
 
+          <IndexRedirect to="/courses" />
           <Route component={IndexPage}>
             <Route name='courses' path="courses" component={CoursesView} />
           </Route>

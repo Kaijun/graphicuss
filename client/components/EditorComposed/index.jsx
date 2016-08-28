@@ -67,8 +67,7 @@ export default class EditorComposed extends React.Component {
           <div className={style['small-canvas'] }>
             <div className={style['title']}>Attached Graphic</div>
             <div onClick={this._handleCanvasEditOpen}>
-              <StaticCanvas
-                canvasJSON={canvasJSON} />
+              <StaticCanvas canvasJSON={canvasJSON} height="300" width="375" />
             </div>
             <div className={style['tip']}>(Click to Edit)</div>
           </div>

@@ -14,14 +14,23 @@ class StaticCanvas extends Component {
     let canvasDom = ReactDOM.findDOMNode(this.refs.canvas)
     this.canvas = new fabric.StaticCanvas(canvasDom)
 
-    let {canvasJSON} = this.props
+    let {canvasJSON, height, width} = this.props
+
+    height = height || 600
+    width = width || 750
 
     this.canvas.clear();
     if(canvasJSON){
       this.canvas.loadFromJSON(JSON.parse(canvasJSON))
     }
-    this.canvas.renderAll()
+    // set size of canvas
+    this.canvas.setHeight(height)
+    this.canvas.setWidth(width)
+    this.canvas.setZoom(height/600)
+
+
     this.canvas.calcOffset();
+    this.canvas.renderAll()
   }
 
   componentDidUpdate () {
@@ -40,7 +49,7 @@ class StaticCanvas extends Component {
     let {className} = this.props
     return (
       <div className={className}>
-          <canvas id="c" ref="canvas" width="400" height="350"></canvas>
+          <canvas id="c" ref="canvas"></canvas>
       </div>
     )
   }

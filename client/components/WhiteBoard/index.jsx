@@ -2,6 +2,8 @@
 import React, { Component, PropTypes } from 'react'
 import style from './style.css'
 
+import DrawingFabric from '../../utils/drawing-fabric'
+
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, IconButton, List, ListItem} from 'material-ui';
 import TouchIcon from 'material-ui/svg-icons/action/touch-app';
 import EclipseIcon from 'material-ui/svg-icons/image/panorama-fish-eye';
@@ -63,11 +65,11 @@ class WhiteBoard extends Component {
     let canvas = this.canvas.fabricCanvas;
     this.addDrawingHistory(this.exportCanvas())
     canvas.on('mouse:up', (event) => {
-      console.log(event)
       let str = this.exportCanvas();
       if(str === this.state.drawingHistory[0].json){
       }
       else{
+        console.log(str)
         this.addDrawingHistory(str)
       }
     })
