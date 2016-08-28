@@ -1,5 +1,6 @@
 // console.log(a)
 import express from 'express'
+import http from 'http'
 import path from 'path'
 import mongoose from  'mongoose'
 import passport from 'passport'
@@ -14,10 +15,12 @@ import session from 'express-session'
 import historyApiFallback from 'express-history-api-fallback'
 import {dbConfig} from './config/index'
 import {apiRoutes, routes} from './config/routes'
+import initWebSocket from './config/ws-routes'
 
 const SERVER_PORT = 3001
 
 const app = express()
+const server = http.createServer(app)
 
 // Log Middleware for all incoming requests
 if(app.get('env') === 'development'){
@@ -55,13 +58,14 @@ passportConf(passport)
 
 // Setting up Routers:
 app.use(apiRoutes, routes)
-
+// Setting up WebSocket Listening:
+initWebSocket(server, app)
 
 // app.get('/api/test', (req, res) => {
 //   res.send('The APIs works!')
 // })
 
-app.listen(SERVER_PORT, () => {
+server.listen(SERVER_PORT, () => {
   console.log(`API Server listening on port ${SERVER_PORT}!`)
 })
 

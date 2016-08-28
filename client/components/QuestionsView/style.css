@@ -21,3 +21,20 @@
 .question-title:hover{
   color: #0198FF;
 }
+
+.question-list{
+  margin-top: 36px;
+
+  .header{
+    padding: 24px;
+    font-size: 12px;
+    color: rgb(158, 158, 158);
+    border-bottom: 1px solid rgb(224, 224, 224);
+  }
+
+  .entry{
+
+      padding: 18px 24px;
+      border-bottom: 1px solid rgb(224, 224, 224);
+  }
+}

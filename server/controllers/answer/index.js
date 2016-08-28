@@ -9,7 +9,8 @@ export const load = async (req, res, next, id) => {
 
 // get all Answers
 export const allAnswers = async (req, res, next) => {
-  let answers = await Answer.list(req.query.questionId)
+  let answers = await Answer.list(req.query.questionId, req.user._id);
+
   res.json(answers)
 }
 
@@ -29,6 +30,14 @@ export const newAnswer = (req, res, next) => {
     res.json(answer.toObject())
   }, (err) => {
     res.status(404).json(err)
+  }).then(()=>{
+    // Informe all web sockets who has subscribed to the answers resources of a certain question.
+    let questionId = req.query.questionId
+    req.app.get('questionSocketMap')[questionId].forEach((socket)=>{
+      Answer.list(questionId, req.user._id).then((newAnswers) => {
+        socket.emit('answers-changed', newAnswers);
+      });
+    })
   })
 }
 
@@ -63,28 +72,46 @@ export const delAnswer = async (req, res, next) => {
 }
 
 
-export const voteAnswer =  (req, res, next) => {
+export const voteAnswer =  async (req, res, next) => {
   let answerId = req.params.answerId
   let userId = req.user._id
   let voteType = parseInt(req.params.voteType)
   if(voteType!==1&&voteType!==2)
     res.status(404).json({message: "Invalid Action! Unknown Vote Type"})
-  VoteAnswer.findOne({answerId: answerId, handler: userId}).then((result) => {
-    if(result){
-      result.type = voteType
-      return result.save()
+
+  let vote = await VoteAnswer.findOne({answer: answerId, handler: userId});
+  if(vote){
+    if(vote.type == voteType){
+      await vote.remove();
+      res.json({
+        type: 0
+      })
     }
     else{
-      return VoteAnswer.create({
-        answer: answerId,
-        handler: userId,
+      vote.type = voteType
+      await vote.save();
+      res.json({
         type: voteType
       })
     }
-  }).then((vote) => {
-    res.json(vote.toObject())
-  }, (err) => {
-    console.log(err)
-    res.status(404).json(err)
+  }
+  else{
+    await VoteAnswer.create({
+      answer: answerId,
+      handler: userId,
+      type: voteType
+    })
+    res.json({
+      type: voteType
+    })
+  }
+
+  // Informe all web sockets who has subscribed to the answers resources of a certain question.
+  let questionId = req.answer.question
+  req.app.get('questionSocketMap')[questionId].forEach((socket)=>{
+    Answer.list(questionId, req.user._id).then((newAnswers) => {
+      socket.emit('answers-changed', newAnswers);
+    });
   })
+
 }

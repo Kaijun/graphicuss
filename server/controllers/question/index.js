@@ -15,7 +15,7 @@ export const allQuestions = async (req, res, next) => {
 }
 
 // new single Question
-export const newQuestion = (req, res, next) => {
+export const newQuestion = async (req, res, next) => {
   Question.create({
     title: req.body.title || '',
     content: req.body.content || '',
@@ -29,7 +29,17 @@ export const newQuestion = (req, res, next) => {
     res.json(question.toObject())
   }, (err) => {
     res.status(404).json({message: err})
+  }).then(()=>{
+    // Informe all web sockets who has subscribed to the questions resources of a certain course.
+    let courseId = req.query.courseId
+    req.app.get('courseSocketMap')[courseId].forEach((socket)=>{
+      Question.list(courseId).then((newQuestions) => {
+        socket.emit('questions-changed', newQuestions);
+      });
+    })
   })
+
+
 }
 
 
@@ -62,42 +72,41 @@ export const delQuestion = async (req, res, next) => {
   res.json(question.toObject())
 }
 
-export const voteQuestion = (req, res, next) => {
+export const voteQuestion = async (req, res, next) => {
   let questionId = req.params.questionId
   let userId = req.user._id
   let voteType = parseInt(req.params.voteType)
   if(voteType!==1&&voteType!==2)
     res.status(404).json({message: "Invalid Action! Unknown Vote Type"})
-  VoteQuestion.findOne({question: questionId, handler: userId}).then((result) => {
-    if(result){
-      if(result.type == voteType){
-        return result.remove().then(data => {
-          res.json({
-            type: 0
-          })
-        })
-      }
-      else{
-        result.type = voteType
-        return result.save().then(() => {
-          res.json({
-            type: voteType
-          })
-        })
-      }
-    }
-    else{
-      return VoteQuestion.create({
-        question: questionId,
-        handler: userId,
-        type: voteType
-      }).then(value => {
-        res.json({
-          type: voteType
-        })
+
+  let vote = await VoteQuestion.findOne({question: questionId, handler: userId});
+  if(vote){
+    if(vote.type == voteType){
+      await vote.remove();
+      res.json({
+        type: 0
       })
     }
-  })
+    else{
+      vote.type = voteType
+      await vote.save();
+      res.json({
+        type: voteType
+      })
+    }
+  }
+  else{
+    await VoteQuestion.create({
+      question: questionId,
+      handler: userId,
+      type: voteType
+    })
+    res.json({
+      type: voteType
+    })
+  }
+
+
 }
 
 export const favQuestion = (req, res, next) => {

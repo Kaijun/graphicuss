@@ -21,7 +21,7 @@ class IndexView extends Component {
     return (
       <div>
         <nav>
-          <AppBar title="E-Discuss" displaySearch={true} />
+          <AppBar title="Graphicuss" displaySearch={true} />
           <IndexNavBar />
         </nav>
         <ContentSection >

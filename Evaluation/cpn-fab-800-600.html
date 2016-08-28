@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Components Test Native</title>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.3/fabric.min.js"></script>
+</head>
+<body>
+	<h1 >Result:</h1>
+	<div id="xStr" ></div>
+	<div id="yStr" ></div>
+
+	<canvas id="Canvas" width="800" height="600"></canvas>
+	<script type="text/javascript">
+		
+		var xStr = ''
+		var yStr = ''
+
+		var canvas = new fabric.Canvas('Canvas');
+		var height = canvas.height;
+		var width = canvas.width;
+		var context = canvas.getContext('2d');
+
+		function clearCanvas(argument) {
+			canvas.clear();
+		}
+		function getCanvasOutputLength(argument) {
+			return JSON.stringify(canvas.toJSON()).length
+
+		}
+		function getRandomPos() {
+			return {
+				x: Math.floor(Math.random()*width),
+				y: Math.floor(Math.random()*height),
+			}
+		}
+
+        function dSqu() {
+        	var pos = getRandomPos()
+            canvas.add(new fabric.Rect({
+			  left: pos.x,
+			  top: pos.y,
+			  width: 100,
+			  height: 100,
+			  stroke: 'black',
+			  strokeWidth : 1,
+    		  fill: 'transparent',
+			}))
+        }
+
+        function dCir() {
+        	var pos = getRandomPos()
+
+            canvas.add(new fabric.Circle({
+			  left: pos.x,
+			  top: pos.y,
+			  radius: 100,
+			  stroke: 'black',
+			  strokeWidth : 1,
+    		  fill: 'transparent',
+			}))
+        }
+
+        function dLine() {
+        	var startPos = getRandomPos()
+        	var endPos = getRandomPos()
+        	canvas.add(new fabric.Line([startPos.x, startPos.y, endPos.x, endPos.y], {
+		        stroke: 'black',
+			  	strokeWidth : 1,
+		    }));
+        }
+		var functions = [dSqu, dCir, dLine];
+
+
+		for(x=0; x<=200; x++){
+		   // Your logic here
+
+			for(var i=0; i<=x*1; i++){
+			   functions[Math.floor(Math.random()*functions.length)]();
+			}
+			xStr += x*1 + ' ';
+			yStr += getCanvasOutputLength() + ' '
+			clearCanvas()
+			console.log(x)
+
+		}
+		document.getElementById('xStr').innerHTML = xStr;
+		document.getElementById('yStr').innerHTML = yStr;
+		console.log(xStr)
+		console.log(yStr)
+
+
+	</script>
+</body>
+</html>

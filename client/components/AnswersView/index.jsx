@@ -2,6 +2,7 @@
 import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router'
 
+import FlipMove from 'react-flip-move';
 import WhiteBoard from '../WhiteBoard'
 import StaticCanvas from '../StaticCanvas'
 import RichTextEditor from '../RichTextEditor'
@@ -11,6 +12,7 @@ import { Toggle, Paper, Avatar, TextField, RaisedButton, Card, CardActions, Card
 
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 
+import io from 'socket.io-client';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import style from './style.css'
@@ -26,6 +28,16 @@ class AnswersView extends React.Component {
       dialogCanvasJSON: null,
       quotedAnswer: null,
     }
+
+
+    var socket = io.connect('http://localhost:3001/ws/questions/');
+    socket.on('connect', () => {
+      socket.emit('question-to-listen', this.questionId);
+    })
+    socket.on('answers-changed', (answers) => {
+      this.props.answersAction.setAnswers(answers)
+    });
+
   }
 
   componentDidMount() {
@@ -51,11 +63,11 @@ class AnswersView extends React.Component {
     })
   }
   upvoteAnswerHandler = (answerId) => {
-    // this.props.answersAction.upvoteAnswer(answerId)
+    this.props.answersAction.upvoteAnswer(answerId)
   }
 
   downvoteAnswerHandler = (answerId) => {
-    // this.props.answersAction.downvoteAnswer(answerId)
+    this.props.answersAction.downvoteAnswer(answerId)
   }
 
   postNewAnswerHandler = (e) => {
@@ -111,6 +123,7 @@ class AnswersView extends React.Component {
           </div>)
         }
 
+        <FlipMove>
         {
           answers.map((answer) => (
               <Card style={{marginBottom: 10}} key={answer._id} id={answer._id}>
@@ -144,8 +157,8 @@ class AnswersView extends React.Component {
                   </div>
                 </CardText>
                 <CardActions>
-                  <FlatButton onClick={this.upvoteAnswerHandler.bind(this, answer._id)}  label="Up" />
-                  <FlatButton onClick={this.downvoteAnswerHandler.bind(this, answer._id)} label="Down" />
+                  <FlatButton onClick={this.upvoteAnswerHandler.bind(this, answer._id)}  label="Up"  primary={answer.userVote===1} />
+                  <FlatButton onClick={this.downvoteAnswerHandler.bind(this, answer._id)} label="Down"  primary={answer.userVote===2}  />
                   <h3 style={{display: 'inline', marginLeft: 10}}>{answer.vote}</h3>
                   <span style={{float: 'right', marginRight: '20px', lineHeight: '36px'}}>{answer.creator.username} - {answer.updatedAt.substr(0,10)}</span>
                   <FlatButton onClick={this.quoteAnswerHandler.bind(this, answer)} label="Quote" primary={true} />
@@ -154,6 +167,7 @@ class AnswersView extends React.Component {
             )
           )
         }
+        </FlipMove>
 
         <div>
           {

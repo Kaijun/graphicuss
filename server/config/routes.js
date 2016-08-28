@@ -43,17 +43,12 @@ apiRoutes.post('/answers', isLoggedIn, modern(AnswerCtrl.newAnswer))
 apiRoutes.get('/answers/:answerId', modern(AnswerCtrl.getAnswer))
 apiRoutes.put('/answers/:answerId', isLoggedIn, modern(AnswerCtrl.editAnswer))
 apiRoutes.delete('/answers/:answerId', isLoggedIn, modern(AnswerCtrl.delAnswer))
-apiRoutes.post('/answers//:answerId/vote/:voteType', isLoggedIn, modern(AnswerCtrl.voteAnswer))
+apiRoutes.post('/answers/:answerId/vote/:voteType', isLoggedIn, modern(AnswerCtrl.voteAnswer))
 
 apiRoutes.get('/search/course/:courseCode', isLoggedIn, modern(SearchCtrl.searchCourse))
 
-
-
-
-
 apiRoutes.post('/upload-avatar', modern(UploadCtrl.uploadAvatar))
 apiRoutes.post('/upload-file', modern(UploadCtrl.uploadFile))
-
 
 // Default Error Handling
 apiRoutes.use((err, req, res, next) => {

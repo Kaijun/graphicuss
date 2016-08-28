@@ -15,7 +15,7 @@ export const allCourses = async (req, res, next) => {
 
 // new single Course
 export const newCourse = (req, res, next) => {
-  if(req.user.tutor===true){
+  if(req.user.tutor===true || req.user.admin===true){
     Course.create({
       name: req.body.name || '',
       desc: req.body.desc || '',

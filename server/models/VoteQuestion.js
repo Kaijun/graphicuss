@@ -12,10 +12,12 @@ const voteQuestionSchema = mongoose.Schema({
 const voteQuestionModel = mongoose.model('VoteQuestion', voteQuestionSchema)
 
 // methods ======================
-const voteHook = (doc) => {
+const voteHook = (doc, next) => {
   voteQuestionModel.find({question: doc.question}).then((votes) => {
     let voteCounts = votes.filter(i => i.type===1).length - votes.filter(i => i.type===2).length
-    Question.findByIdAndUpdate(doc.question, {vote: voteCounts}).then(() => {})
+    Question.findByIdAndUpdate(doc.question, {vote: voteCounts}).then(() => {
+      next()
+    })
   })
 }
 voteQuestionSchema.post('save', voteHook)

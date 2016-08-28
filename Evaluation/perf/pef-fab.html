@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Components Test Native</title>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.3/fabric.min.js"></script>
+</head>
+<body>
+	<div > 
+		<input id="num" type="" name="" value=0>
+		<button onclick="document.getElementById('num').value = parseInt(document.getElementById('num').value) +1000;">+1000</button> 
+		<button id="prepare">prepare data</button>
+		<button id="render">Render</button>
+	</div>
+	<div > 
+		<button id="script">Script Time Test</button>
+	</div>
+	<!-- <div >From  <input id="from-num" type="" name="" value=0> <button id="test">Run Test +1000</button> </ins></div> -->
+
+	<canvas id="Canvas" width="800" height="600"></canvas>
+	<script type="text/javascript">
+		var imageData = null;
+
+		document.getElementById('prepare').onclick = function(e) {
+			var num = document.getElementById('num').value || 0
+			imageData = generateCanvasJSON(num)
+		}
+		document.getElementById('render').onclick = function(e) {
+			// console.time('render')
+			console.timeStamp('yoyoyo')
+			canvas.loadFromJSON(imageData)
+			console.timeStamp('yoyoyo')
+			// console.timeEnd('render')
+		}
+		document.getElementById('script').onclick = function(e) {
+			// console.time('render')
+			var strX = ''
+			var strY = ''
+
+			for(var i=0; i<=50000; i+=1000){
+				console.log(i)
+				strX += i + ' ';
+				var  imageData = generateCanvasJSON(i)
+				var t =  window.performance.now();
+				canvas.loadFromJSON(imageData)
+				t = window.performance.now() - t;
+				strY += t + ' ';
+			}
+			console.log(strX)
+			console.log(strY)
+		}
+
+		// document.getElementById('test').onclick = function(e) {
+		// 	var num = parseInt(document.getElementById('from-num').value) + 1000
+		// 	document.getElementById('from-num').value = num
+		// 	var data = generateCanvasJSON(num)
+		// 	setTimeout(function() {
+
+		// 		console.timeStamp(num)
+		// 		canvas.loadFromJSON(data)
+		// 		console.timeStamp(num)
+		// 	}, 500)
+
+		// }
+
+		var canvas = new fabric.StaticCanvas('Canvas');
+		var height = canvas.height;
+		var width = canvas.width;
+		var context = canvas.getContext('2d');
+
+		function clearCanvas(argument) {
+			canvas.clear();
+		}
+		function getCanvasOutputLength(argument) {
+			return JSON.stringify(canvas.toJSON()).length
+
+		}
+		function getRandomPos() {
+			return {
+				x: Math.floor(Math.random()*width),
+				y: Math.floor(Math.random()*height),
+			}
+		}
+
+        function dSqu() {
+        	var pos = getRandomPos()
+            return new fabric.Rect({
+			  left: pos.x,
+			  top: pos.y,
+			  width: 100,
+			  height: 100,
+			  stroke: 'black',
+			  strokeWidth : 1,
+    		  fill: 'transparent',
+			}).toObject()
+        }
+
+        function dCir() {
+        	var pos = getRandomPos()
+
+            return new fabric.Circle({
+			  left: pos.x,
+			  top: pos.y,
+			  radius: 100,
+			  stroke: 'black',
+			  strokeWidth : 1,
+    		  fill: 'transparent',
+			}).toObject()
+        }
+
+        function dLine() {
+        	var startPos = getRandomPos()
+        	var endPos = getRandomPos()
+        	return new fabric.Line([startPos.x, startPos.y, endPos.x, endPos.y], {
+		        stroke: 'black',
+			  	strokeWidth : 1,
+		    }).toObject();
+        }
+		function generateCanvasJSON(cmpNum){
+			var json = {
+				objects: [],
+				background: "rgba(0, 0, 0, 0)"
+			}
+			var functions = [dSqu, dCir, dLine];
+			for(var i=0; i<cmpNum; i++){
+			   json.objects.push(functions[Math.floor(Math.random()*functions.length)]());
+			}
+		   return json;
+		}
+
+		// console.log(generateCanvasJSON(50));
+		// canvas.loadFromJSON(generateCanvasJSON(20))
+	</script>
+</body>
+</html>

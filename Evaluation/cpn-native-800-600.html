@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Components Test Native</title>
+</head>
+<body>
+
+	<canvas id="Canvas" width="800" height="600"></canvas>
+
+	<script type="text/javascript">
+		
+		var xStr = ''
+		var yStr = ''
+
+		var canvas = document.getElementById('Canvas');
+		var height = canvas.height;
+		var width = canvas.width;
+		var context = canvas.getContext('2d');
+
+		function clearCanvas(argument) {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+		}
+		function getCanvasOutputLength(argument) {
+			return JSON.stringify(context.getImageData(0, 0, canvas.width, canvas.height)).length;
+
+		}
+		function getCanvasDataURLLength(argument) {
+			return canvas.toDataURL().length;
+
+		}
+		function getRandomPos() {
+			return {
+				x: Math.floor(Math.random()*width),
+				y: Math.floor(Math.random()*height),
+			}
+		}
+		function getRandomColor() {
+			return '#'+Math.floor(Math.random()*16777215).toString(16);
+		}
+
+        function dSqu() {
+        	var pos = getRandomPos()
+			// context.strokeStyle=getRandomColor();
+            context.strokeRect(pos.x, pos.y, 100, 100); //Outline
+        }
+
+        function dCir() {
+        	var pos = getRandomPos()
+            context.beginPath();
+			// context.strokeStyle=getRandomColor();
+            context.arc(pos.x, pos.y, 100,0,2*Math.PI);
+            context.stroke();
+        }
+
+        function dLine() {
+        	var startPos = getRandomPos()
+        	var endPos = getRandomPos()
+            context.beginPath();
+			// context.strokeStyle=getRandomColor();
+            context.moveTo(startPos.x, startPos.y);
+            context.lineTo(endPos.x, endPos.y);
+            context.stroke();
+        }
+
+		var functions = [dSqu, dCir, dLine];
+
+
+		for(x=0; x<=2000; x++){
+		   // Your logic here
+
+			for(var i=0; i<=x; i++){
+			   functions[Math.floor(Math.random()*functions.length)]();
+			}
+			xStr += x + ' ';
+			// yStr += getCanvasOutputLength() + ' '
+			yStr += getCanvasDataURLLength() + ' '
+			clearCanvas()
+			console.log(x)
+
+		}
+
+		console.log(xStr)
+		console.log(yStr)
+
+
+	</script>
+</body>
+</html>

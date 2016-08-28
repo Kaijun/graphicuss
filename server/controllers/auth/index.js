@@ -5,8 +5,6 @@ import { authConfig } from '../../config'
 
 // process the login form
 export const login = (req, res, next) => {
-  // fetch()
-  console.log('heheheh')
   passport.authenticate('login', function (err, user, info) {
     if(user){
       // if user is found and password is right

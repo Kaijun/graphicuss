@@ -1,10 +1,13 @@
 
 import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router'
-
+import FlipMove from 'react-flip-move';
 import CourseCardExpandable from '../CourseCardExpandable'
 import { Toggle, Card, CardHeader, CardText, Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, Avatar, RaisedButton, FlatButton, Dialog, TextField} from 'material-ui';
 import io from 'socket.io-client';
+
+
+
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import style from './style.css'
@@ -19,6 +22,14 @@ class QuestionsView extends React.Component {
     this.props.courseAction.getCourse(this.courseId)
     this.props.questionsAction.getQuestions(this.courseId)
 
+    var socket = io.connect('http://localhost:3001/ws/courses/');
+    socket.on('connect', () => {
+      socket.emit('course-to-listen', this.courseId);
+    })
+    socket.on('questions-changed', (questions) => {
+      this.props.questionsAction.setQuestions(questions)
+    });
+
   }
 
 
@@ -31,34 +42,55 @@ class QuestionsView extends React.Component {
 
         <CourseCardExpandable course={this.props.course} questions={this.props.questions.length}></CourseCardExpandable>
 
-        <Table className={style['question-table']}>
-          <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-            <TableRow>
-              <TableHeaderColumn style={{width: '40%'}}>Title</TableHeaderColumn>
-              <TableHeaderColumn style={{width: '10%'}}>Votes</TableHeaderColumn>
-              <TableHeaderColumn style={{width: '10%'}}>Answers</TableHeaderColumn>
-              <TableHeaderColumn style={{width: '20%'}}>Author</TableHeaderColumn>
-              <TableHeaderColumn style={{width: '20%'}}>Date</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          <TableBody  displayRowCheckbox={false}>
+        <div className={style['question-list']}>
+          <div className={style['header']}>
+            <div className="row">
+              <div className="col-md-6">
+                Title
+              </div>
+              <div className="col-md-1">
+                Votes
+              </div>
+              <div className="col-md-1">
+                Answers
+              </div>
+              <div className="col-md-2">
+                Author
+              </div>
+              <div className="col-md-2">
+                Date
+              </div>
+            </div>
+          </div>
+          <div className={style['list']}>
+            <FlipMove>
             {
               this.props.questions.map((question)=>(
-                  <TableRow key={question._id} selectable={false}>
-                    <TableRowColumn style={{width: '40%'}}>
-                      <Link className={style['question-title']} to={`/questions/${question._id}`}>
-                        {question.title}
-                      </Link>
-                    </TableRowColumn>
-                    <TableRowColumn style={{width: '10%'}}>{question.vote}</TableRowColumn>
-                    <TableRowColumn style={{width: '10%'}}>{question.answerCounts}</TableRowColumn>
-                    <TableRowColumn style={{width: '20%'}}>{question.creator.username}</TableRowColumn>
-                    <TableRowColumn style={{width: '20%'}}>{question.createdAt.substr(0,10)}</TableRowColumn>
-                  </TableRow>
+                <div className={style['entry'] + ' row'}  key={question._id}>
+                  <div className="col-md-6">
+                    <Link className={style['question-title']} to={`/questions/${question._id}`}>
+                      {question.title}
+                    </Link>
+                  </div>
+                  <div className="col-md-1">
+                    {question.vote}
+                  </div>
+                  <div className="col-md-1">
+                    {question.answerCounts}
+                  </div>
+                  <div className="col-md-2">
+                    {question.creator.username}
+                  </div>
+                  <div className="col-md-2">
+                    {question.createdAt.substr(0,10)}
+                  </div>
+                </div>
               ))
             }
-          </TableBody>
-        </Table>
+            </FlipMove>
+          </div>
+        </div>
+
 
 
       </div>

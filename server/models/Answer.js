@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import Question from './Question'
+import VoteAnswer from './VoteAnswer'
 const Schema = mongoose.Schema
 
 var answerSchema = mongoose.Schema({
@@ -24,8 +25,19 @@ answerSchema.method.remove = function() {
 
 // statics ======================
 // get all questions
-answerSchema.statics.list = function(questionId) {
-  return this.find({'question': questionId}).sort('+vote').populate('creator quotedAnswer').exec()
+answerSchema.statics.list = async function(questionId, userId) {
+  let answers = await this.find({'question': questionId}).populate('creator quotedAnswer').exec()
+
+  let result = []
+  for( var i = 0; i < answers.length; i++){
+    let answer = answers[i].toObject()
+    let vote = await VoteAnswer.findOne({answer: answer._id, handler: userId});
+    answer.userVote = vote ? vote.type : 0;
+    result.push(answer)
+  }
+
+  return result;
+
 }
 // get one questions
 answerSchema.statics.load = function(_id) {

@@ -6,15 +6,18 @@ const newQuestionRequest = (courseId, data) => fetch.postJSON(`/api/questions?co
 
 const NEW_QUESTION = 'new question'
 const GET_QUESTIONS = 'get questions'
+const SET_QUESTIONS = 'set questions'
 // Actions
 const getQuestions = createAction(GET_QUESTIONS, (courseId) => getQuestionsRequest(courseId))
+const setQuestions = createAction(SET_QUESTIONS, (questions) => questions)
 const newQuestion = createAction(NEW_QUESTION, (courseId, data) => newQuestionRequest(courseId, data))
 
 
 // Exposed Actions
 export const actions = {
   newQuestion,
-  getQuestions
+  getQuestions,
+  setQuestions
 }
 
 // Reducers
@@ -25,6 +28,9 @@ export default handleActions({
     return [action.payload, ...state]
   },
   [GET_QUESTIONS] (state, action) {
+    return [...action.payload]
+  },
+  [SET_QUESTIONS] (state, action) {
     return [...action.payload]
   },
 
