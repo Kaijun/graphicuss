@@ -232,6 +232,7 @@ DrawingFabric.Functionality.addText = (function(){
 
       var cursor;
       var cursorBlinker;
+      var lastCoords;
       var renderCaratCursor = function(indexes){
         var coords = cursorIndexToCanvasPosition(indexes[0]);
 
@@ -324,7 +325,7 @@ DrawingFabric.Functionality.addText = (function(){
         }
 
         var snippet = text.slice(cursorIndex - charsSinceNewLine,cursorIndex);
-
+        var results = null;
         withContext(function(ctx){
           dx = ctx.measureText(snippet).width;
           dy = selectedObj.fontSize * selectedObj.lineHeight;
