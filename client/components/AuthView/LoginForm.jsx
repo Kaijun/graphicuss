@@ -14,7 +14,7 @@ import { browserHistory } from 'react-router'
 const EMAIL_ERROR_TEXT = 'This username is not valid.'
 const PWD_ERROR_TEXT = 'This password is not valid.'
 
-export default class LoginForm extends Component {
+class LoginForm extends Component {
 
   constructor (props) {
     super(props)
