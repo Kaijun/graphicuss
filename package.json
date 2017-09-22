@@ -8,7 +8,7 @@
     "yoyoyo": "babel --no-babelrc --presets 'node6' server/index.js",
     "start": "",
     "client": "babel-node client/dev-server.js",
-    "server": "nodemon --exec babel-node --presets 'es2015-node6,stage-0' server/index.js",
+        "server": "nodemon --exec babel-node --presets es2015-node6,stage-0 server/index.js",
     "clean": "rm -rf dist/*",
     "build": "npm run clean && NODE_ENV=production webpack --progress",
     "start@prod": "npm run build && NODE_ENV=production node dist/index.js"
@@ -56,7 +56,7 @@
     "react-redux": "^4.4.0",
     "react-router": "^2.0.0",
     "react-router-redux": "^4.0.0",
-    "react-tap-event-plugin": "^1.0.0",
+    "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.3.1",
     "redux-actions": "^0.9.1",
     "redux-promise": "^0.5.3",
